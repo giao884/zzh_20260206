@@ -31,7 +31,7 @@ class Config:
         parser.add_argument('--seed', type=int, default=83, help='Random seed')
 
         # Experiment Settings
-        parser.add_argument('--num_evaluation_trials', type=int, default=10, help='Number of evaluation trials')
+        parser.add_argument('--num_evaluation_trials', type=int, default=100, help='Number of evaluation trials')
         parser.add_argument('--template_runs_per_class', type=int, default=20, help='Number of template runs per class')
 
         # Distribution Settings
@@ -149,6 +149,14 @@ def generate_template_masks(config, initial_state_dict):
         emnist_train = datasets.EMNIST(root='./data', split='digits', train=True, download=True, transform=transform)
     elif config.domain == 'fashion':
         emnist_train = datasets.FashionMNIST(root='./data', train=False, download=True, transform=transform)
+    elif config.domain == 'cifar10':
+        transform_cifar = transforms.Compose([
+            transforms.Grayscale(num_output_channels=1),
+            transforms.Resize((28, 28)),
+            transforms.ToTensor(),
+            transforms.Normalize((0.5,), (0.5,))
+        ])
+        emnist_train = datasets.CIFAR10(root='./data', train=False, download=True, transform=transform_cifar)
 
     template_masks = []
     for i in tqdm(range(config.num_clients), desc="Generating Templates"):
@@ -240,6 +248,14 @@ def run_comprehensive_attack_evaluation(config, initial_state_dict, template_mas
         mnist_train = datasets.MNIST(root='./data', train=True, download=True, transform=transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))]))
     elif config.domain == 'fashion':
         mnist_train = datasets.FashionMNIST(root='./data', train=True, download=True, transform=transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])) # Use training set as public proxy
+    elif config.domain == 'cifar10':
+        transform_cifar = transforms.Compose([
+            transforms.Grayscale(num_output_channels=1),
+            transforms.Resize((28, 28)),
+            transforms.ToTensor(),
+            transforms.Normalize((0.5,), (0.5,))
+        ])
+        mnist_train = datasets.CIFAR10(root='./data', train=True, download=True, transform=transform_cifar)
 
     all_metrics = []
     true_sim_acc = 0
@@ -345,7 +361,7 @@ def run_comprehensive_attack_evaluation(config, initial_state_dict, template_mas
         print(f"Dirichlet Configuration: alpha={config.dirichlet_alpha}, min_classes={config.dirichlet_min_classes} (random)")
     print(f"\n[1] Top-1 Dominant Class Accuracy: {avg_top1_acc:.4f}")
     print(f"[2] Average Top-K Jaccard Similarity: {avg_jaccard:.4f}")
-    print(f"[3] Average Rank Correlation (Spearman's Rho): {avg_rank_corr:.4f}")
+    print(f"[3] Average Rank Correlation: {avg_rank_corr:.4f}")
     print(f"[4] Average Top-1 similarity true value: {true_sim_acc:.4f}")
 
     avg_top3_recall = top3_recall_sum / config.num_evaluation_trials
