@@ -127,7 +127,7 @@ def load_dataset(dataset_name):
         train_data = NumpyDataset(X_train, y_train)
         test_data = NumpyDataset(X_test, y_test)
     else:
-        raise ValueError(f"不支持的数据集: {dataset_name}")
+        raise ValueError(f"Unsupported dataset: {dataset_name}")
     return train_data, test_data
 
 def pathological_non_iid_partition(train_dataset, test_dataset, num_clients, num_classes, 
