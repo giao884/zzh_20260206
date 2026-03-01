@@ -16,7 +16,7 @@ project_root/
 │   │   ├── purchase100.npz
 │   │   └── texas100.npz
 │   └── ... (other datasets)
-├── main_ablation.py
+├── main.py
 └── ...
 ```
 
@@ -29,7 +29,7 @@ You can run the main script using Python. All parameters can be configured via c
 Run with default settings (CNN on MNIST, 20 clients, Dirichlet partition):
 
 ```bash
-python main_ablation.py
+python main.py
 ```
 
 ### Arguments
@@ -66,15 +66,16 @@ python main_ablation.py
 
 **Run ResNet18 on CIFAR10:**
 ```bash
-python main_ablation.py --model_name ResNet18 --dataset_name CIFAR10 --num_rounds 50 --total_clients 20
+python main.py --model_name ResNet18 --dataset_name CIFAR10 --num_rounds 50 --total_clients 20
 ```
 
 **Run MLP on Texas100 with Non-IID partition:**
 ```bash
-python main_ablation.py --model_name MLP --dataset_name texas100 --data_partition noniid --pathological_alpha 0.5
+python main.py --model_name MLP --dataset_name texas100 --data_partition noniid --pathological_alpha 0.5
 ```
 
 **Run without Homomorphic Encryption (faster debugging):**
 ```bash
-python main_ablation.py --no_he
+python main.py --no_he
 ```
+
